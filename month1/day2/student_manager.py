@@ -1,36 +1,79 @@
-students = []
+import json
+
+# Load student from json file if it exists, otherwise create an empty json file
+
+try:
+    with open("students.json", "r") as file:
+        students = json.load(file)
+except FileNotFoundError:
+    students = []
+    with open("students.json", "w") as file:
+        json.dump(students, file, indent=4)
+except json.JSONDecodeError:
+    print("Error reading students.json file. The file may be corrupted or empty.")
+    students = []
+    with open("students.json", "w") as file:
+        json.dump(students, file, indent=4)
+
+def load_students() -> list[dict]:
+
+    """Function to load students from the students.json file"""
+
+    try:
+        with open("students.json", "r") as file:
+            return json.load(file)
+    except FileNotFoundError:
+        print("students.json file not found. Creating a new one.")
+        with open("students.json", "w") as file:
+            json.dump([], file, indent=4)
+        return []
+    except json.JSONDecodeError:
+        print("Error reading students.json file. The file may be corrupted or empty.")
+        return []
+
+def save_students(students: list[dict]) -> None:
+
+    """Function to save students to the students.json file"""
+
+    with open("students.json", "w") as file:
+        json.dump(students, file, indent=4)
 
 def add_student(name: str,age: int,skills: list[str]) -> None:
 
-    """Function to add a new student to the students list"""
+    """Function to add a new student to the students file"""
     
     student = {
         "name" : name,
         "age" : age,
         "skills" : skills
     }
+
+    students = load_students()
     students.append(student)
+    save_students(students)
 
 def view_students() -> None:
 
-    """Function to view all students in the students list"""
+    """Function to view all students in the students file"""
 
+    students = load_students()
     if not students:
         print("No students found.")
         return
 
     for student in students:
-            print(f"Name: {student['name']}, Age: {student['age']}, Skills: {', '.join(student['skills'])}")
+        print(f"Name: {student['name']}, Age: {student['age']}, Skills: {', '.join(student['skills'])}")
 
 def search_student(name: str) -> None:
 
     """Function to search for a student by name"""
 
+    students = load_students()
     for student in students:
         if student["name"].lower() == name.lower():
-            print (f"Found student: Name: {student['name']}, Age: {student['age']}, Skills: {', '.join(student['skills'])}")
+            print(f"Name: {student['name']}, Age: {student['age']}, Skills: {', '.join(student['skills'])}")
             return
-    print(f"Student with name {name} not found.")
+    print("Student not found.")
 
 def main():
    while True:
